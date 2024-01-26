@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.io.ClassPathResource
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 @SpringBootTest
 @ContextConfiguration(classes = [FileStorageService::class])
@@ -21,6 +23,15 @@ class FileStorageServiceTest {
 
     @Value("\${uploadDir}")
     lateinit var uploadDir: String
+
+    @Test
+    fun `should return the file if it exists`() {
+        Files.copy(Path.of(ClassPathResource("fox.png").file.path), Path.of(uploadDir).resolve("fox.png"), StandardCopyOption.REPLACE_EXISTING)
+
+        val file = fileStorageService.get("fox.png")
+
+        assertTrue(file.exists())
+    }
 
     @Test
     fun `store should correctly store a file and return the file name`() {

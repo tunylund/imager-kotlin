@@ -1,6 +1,7 @@
 package com.example.imagerkotlin.integration
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -8,16 +9,24 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ImageUploadTest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
-    fun `should reply with hello`() {
-        restTemplate.getForEntity("/images", String::class.java)
+    fun `should receive the image if it exists`() {
+        val file = ClassPathResource("fox.png").file
+        Files.copy(Path.of(file.path), Path.of("/tmp/imager-kotlin/fox.png"), StandardCopyOption.REPLACE_EXISTING)
+
+        restTemplate.getForEntity("/images/fox.png", ByteArray::class.java)
             .apply {
-                assert(statusCode.is2xxSuccessful)
-                assertEquals(body, "Hello")
+                assertEquals(HttpStatus.OK, statusCode)
+                assertEquals(MediaType.IMAGE_PNG, headers.contentType)
+                assertNotNull(body)
+                assert(body!!.isNotEmpty())
             }
     }
 

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Files
 
 @RestController
 class ImagesController {
@@ -12,9 +13,13 @@ class ImagesController {
     @Autowired
     lateinit var fileStorageService: FileStorageService
 
-    @GetMapping("/images")
-    fun getImage(): String {
-        return "Hello"
+    @GetMapping("/images/{filename}")
+    fun getImage(@PathVariable("filename") filename: String): ResponseEntity<ByteArray> {
+        val file = fileStorageService.get(filename)
+        val contentType = Files.probeContentType(file.toPath())
+        return ResponseEntity.ok()
+            .header("Content-Type", contentType)
+            .body(file.readBytes())
     }
 
     @RequestMapping(path=["/images"], method = [RequestMethod.POST], headers = ["content-type=multipart/form-data"])

@@ -3,6 +3,7 @@ package com.example.imagerkotlin.controllers
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -12,6 +13,10 @@ class FileStorageService {
 
     @Value("\${uploadDir}")
     private lateinit var uploadDir: String
+
+    fun get(filename: String): File {
+        return Path.of(uploadDir).resolve(filename).toFile()
+    }
 
     fun store(file: MultipartFile): String {
         val fileName = ensureConsistentJPGSuffix(ensureSuffix(file.originalFilename!!, file.contentType))
