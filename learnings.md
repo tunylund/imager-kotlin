@@ -2,6 +2,10 @@ No tutorials needed, co pilot chat provides all the example code i need
 I'm creating tests and code as i would normally
 i might skip testing some obvious functionalities because they feel too trivial to create tests for
 
+
+
+
+
 fuck off
 ```kotlin
 private fun ensureSuffix(originalFilename: String, contentType: String?): String {

@@ -17,7 +17,7 @@ import java.nio.file.StandardCopyOption
 class ImageUploadTest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
-    fun `should receive the image if it exists`() {
+    fun `GET should receive the image if it exists`() {
         val file = ClassPathResource("fox.png").file
         Files.copy(Path.of(file.path), Path.of("/tmp/imager-kotlin/fox.png"), StandardCopyOption.REPLACE_EXISTING)
 
@@ -31,14 +31,21 @@ class ImageUploadTest(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @Test
-    fun `should return 200 for valid image upload`() {
+    fun `GET should return 404 if the image does not exist`() {
+        val response = restTemplate.getForEntity("/images/does-not-exist.png", ByteArray::class.java)
+
+        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+    }
+
+    @Test
+    fun `POST should return 200 for valid image upload`() {
         val response = uploadImage("fox.png")
 
         assertEquals(HttpStatus.OK, response.statusCode)
     }
 
     @Test
-    fun `should return 400 for an unsupported image type`() {
+    fun `POST should return 400 for an unsupported image type`() {
         val response = uploadImage("fox.svg")
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
@@ -54,7 +61,6 @@ class ImageUploadTest(@Autowired val restTemplate: TestRestTemplate) {
             add("file", resource)
         }
 
-        val requestEntity = HttpEntity(body, headers)
-        return restTemplate.exchange("/images", HttpMethod.POST, requestEntity, String::class.java)
+        return restTemplate.exchange("/images", HttpMethod.POST, HttpEntity(body, headers), String::class.java)
     }
 }

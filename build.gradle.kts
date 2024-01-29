@@ -19,9 +19,14 @@ repositories {
 }
 
 dependencies {
+    implementation("com.sksamuel.scrimage:scrimage-core:4.1.1")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
