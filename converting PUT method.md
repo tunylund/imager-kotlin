@@ -9,3 +9,11 @@
 Copilot tab completed all the boring bits
 guessed code correctly more often than not
 copilot did not help much with image libraries
+
+feels like it makes me lazy about investigating the libray apis, but eventually i have to go to them any way
+
+i navigate api docs less
+
+code completion was a help
+
+ended up having too few tests for crop service

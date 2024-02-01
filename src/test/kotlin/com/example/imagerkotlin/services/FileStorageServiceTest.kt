@@ -1,17 +1,19 @@
-import com.example.imagerkotlin.controllers.FileStorageService
+package com.example.imagerkotlin.services
+
+import com.example.imagerkotlin.prepareTestFile
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.io.ClassPathResource
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
+import java.io.FileNotFoundException
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
 @SpringBootTest
 @ContextConfiguration(classes = [FileStorageService::class])
@@ -26,11 +28,29 @@ class FileStorageServiceTest {
 
     @Test
     fun `should return the file if it exists`() {
-        Files.copy(Path.of(ClassPathResource("fox.png").file.path), Path.of(uploadDir).resolve("fox.png"), StandardCopyOption.REPLACE_EXISTING)
+        prepareTestFile("fox.png", uploadDir)
 
         val file = fileStorageService.get("fox.png")
 
         assertTrue(file.exists())
+    }
+
+    @Test
+    fun `should return the file with suffix if it exists`() {
+        val resizeParams = ResizeService.ResizeParams(50, 50, false)
+        prepareTestFile("fox.png", "fox-${resizeParams}", uploadDir)
+
+        val file = fileStorageService.get("fox.png", resizeParams)
+
+        assert(file.exists())
+    }
+
+    @Test
+    fun `should throw FileNotFoundException if the file with suffix does not exist`() {
+        val resizeParams = ResizeService.ResizeParams(50, 50, false)
+        assertThrows<FileNotFoundException> {
+            fileStorageService.get("does-not-exist", resizeParams)
+        }
     }
 
     @Test

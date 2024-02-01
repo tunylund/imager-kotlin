@@ -27,7 +27,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
+    implementation("org.openpnp:opencv:4.9.0-0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
 }
 
 tasks.withType<KotlinCompile> {

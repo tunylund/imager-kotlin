@@ -1,7 +1,10 @@
-package com.example.imagerkotlin.integration
+package com.example.imagerkotlin.controllers
 
+import com.example.imagerkotlin.services.FileStorageService
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -9,39 +12,21 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ImageUploadTest(@Autowired val restTemplate: TestRestTemplate) {
 
-    @Test
-    fun `GET should receive the image if it exists`() {
-        val file = ClassPathResource("fox.png").file
-        Files.copy(Path.of(file.path), Path.of("/tmp/imager-kotlin/fox.png"), StandardCopyOption.REPLACE_EXISTING)
-
-        restTemplate.getForEntity("/images/fox.png", ByteArray::class.java)
-            .apply {
-                assertEquals(HttpStatus.OK, statusCode)
-                assertEquals(MediaType.IMAGE_PNG, headers.contentType)
-                assertNotNull(body)
-                assert(body!!.isNotEmpty())
-            }
-    }
-
-    @Test
-    fun `GET should return 404 if the image does not exist`() {
-        val response = restTemplate.getForEntity("/images/does-not-exist.png", ByteArray::class.java)
-
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-    }
+    @MockkBean
+    private lateinit var fileStorageService: FileStorageService
 
     @Test
     fun `POST should return 200 for valid image upload`() {
+        every { fileStorageService.store(any()) } returns "some-image.jpg"
+
         val response = uploadImage("fox.png")
 
         assertEquals(HttpStatus.OK, response.statusCode)
+        verify { fileStorageService.store(any()) }
     }
 
     @Test
@@ -56,9 +41,8 @@ class ImageUploadTest(@Autowired val restTemplate: TestRestTemplate) {
             contentType = MediaType.MULTIPART_FORM_DATA
         }
 
-        val resource = ClassPathResource(file)
         val body = LinkedMultiValueMap<String, Any>().apply {
-            add("file", resource)
+            add("file", ClassPathResource(file))
         }
 
         return restTemplate.exchange("/images", HttpMethod.POST, HttpEntity(body, headers), String::class.java)
