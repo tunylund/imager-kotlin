@@ -1,14 +1,14 @@
 # Imager-Kotlin
 
 _This project was a study of:_
-* What is the experience of using Github Co-Pilot as an aid to convert a service from typescript to kotlin?
+* What is the experience of using Github Co-Pilot as an aid to convert a service from javascript to kotlin?
 * How does Co-Pilot support rusty SpringBoot developer to get back up to speed?
 * How does Co-Pilot support learning a new language - Kotlin
 * What is the impact of using Co-Pilot as part of solo development workflow.
-* How small is the effort of converting a service from typescript to kotlin with Co-Pilot as an assistant?
+* How small is the effort of converting a service from javascript to kotlin with Co-Pilot as an assistant?
 
 Premise:
-* The original service was written in TypeScript years ago. You can find the original service [here](https://github.com/tunylund/imager)
+* The original service was written in JavaScript several years ago.
 * I'm rusty with Java and SpringBoot and I've never written Kotlin.
 * Co-Pilot had access to the entire workspace and was able to gather insights from the existing Kotlin code.
 
@@ -29,12 +29,13 @@ Instead of the TDD `Red`-`Green`-`Refacor` workflow, Code-Assistants push the wo
 Even when realizing and being aware of the risk to missing tests - I managed to miss crucial tests.
 It was just too easy to skip on thoroughness of the test suite.
 
+> [!Tip]
 > Teams that use Code Assistant need extra effort in place to assure quality of the delivery.
 > It would be good to have quality controls in the pipeline that assure that test coverage is high enough.
 > Exploratory testing also becomes even more important to catch bugs.
 
 
-### My awareness of the available APIs and knowledge of how they operate is much smaller than I expected  
+### My awareness of the available APIs and knowledge of how they operate is smaller than I expected  
 If I didn't have Co-Pilot as a help - I would spend more time with the library documentations.
 As a developer, it is imperative to have a mental map of what apis and functionalities are available
 in the main libraries of the project. Knowing what Java standard libraries and SpringBoot libraries provide is crucial
@@ -45,12 +46,13 @@ As a result of having Co-Pilot in the workflow, I became much lazier in reading 
 Co-Pilot helped me get the actual work done quickly, but the side-effect is that I don't actually
 feel as comfortable as I want with the libraries I used and that harms my ability to direct the future of the work.
 
+> [!Tip]
 > Implementation is only a part of a team's outcomes. The learning the team makes during the work is an equally valuable
 > outcome. Teams that use Code Assistants will get the job done quickly, but they need to ensure learning is cultivated
 > and achieved as part of the work.
 
 
-### The speed of my delivery was much improved by Co-Pilot
+### The speed of getting the job done was improved by Co-Pilot
 
 I got the job done. I got it done really quickly with the help of Co-Pilot. At times it
 felt like the LLM was reading my mind. I wasn't creating anything spectacularly new,
@@ -60,6 +62,7 @@ I had mixed experiences when asking about the specifics of the Image libraries -
 Clearly Co-Pilot had less knowledge about them, however it was able to help me at times - just not
 as much as with SpringBoot and Kotlin.
 
+> [!Tip]
 > Delivery speed is greatly improved with the help of Code Assistants. So much so that I would advocate for using
 > Code Assistants in a team.
 
@@ -107,7 +110,7 @@ _It's been a while since I've written SpringBoot and explored Java apis. I neede
 to prime my brain and orient it for java in order to do the work._
 
 <details>
-<summary>show me how to get media content type of a file</summary>
+<summary>show me how to get media content type of a file</summary>  
 
 > To get the media content type of a file in Kotlin, you can use the probeContentType() method from the
 > java.nio.file.Files class. This method returns the MIME type of the file, or null if the file type is not recognized.
