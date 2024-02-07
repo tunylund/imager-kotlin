@@ -3,7 +3,6 @@ package com.example.imagerkotlin.services
 import com.example.imagerkotlin.controllers.ImagesController
 import com.example.imagerkotlin.prepareTestFile
 import com.sksamuel.scrimage.ImmutableImage
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

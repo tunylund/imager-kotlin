@@ -1,5 +1,6 @@
 package com.example.imagerkotlin.services
 
+import com.example.imagerkotlin.controllers.ImagesController
 import com.example.imagerkotlin.prepareTestFile
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -37,7 +38,7 @@ class FileStorageServiceTest {
 
     @Test
     fun `should return the file with suffix if it exists`() {
-        val resizeParams = ResizeService.ResizeParams(50, 50, false)
+        val resizeParams = ImagesController.ResizeParams(50, 50, false)
         prepareTestFile("fox.png", "fox-${resizeParams}", uploadDir)
 
         val file = fileStorageService.get("fox.png", resizeParams)
@@ -47,7 +48,7 @@ class FileStorageServiceTest {
 
     @Test
     fun `should throw FileNotFoundException if the file with suffix does not exist`() {
-        val resizeParams = ResizeService.ResizeParams(50, 50, false)
+        val resizeParams = ImagesController.ResizeParams(50, 50, false)
         assertThrows<FileNotFoundException> {
             fileStorageService.get("does-not-exist", resizeParams)
         }

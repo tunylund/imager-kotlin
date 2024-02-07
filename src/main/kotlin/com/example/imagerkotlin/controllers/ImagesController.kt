@@ -4,22 +4,22 @@ import com.example.imagerkotlin.services.CropService
 import com.example.imagerkotlin.services.FileStorageService
 import com.example.imagerkotlin.services.ResizeService
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
-import org.hibernate.validator.constraints.URL
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.convert.converter.Converter
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.context.annotation.RequestScope
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import java.io.FileNotFoundException
-import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
-import java.nio.file.Path
 
 @RestController
+@Validated
 class ImagesController {
 
     @Autowired
@@ -45,16 +45,15 @@ class ImagesController {
     }
 
     @GetMapping("/images/{filename}", params = ["resizeParams"])
-    fun getResizedImage(@PathVariable("filename") filename: String, request: HttpServletRequest, @RequestParam(required = false) resizeParams: String): ResponseEntity<ByteArray> {
-        val parsedResizeParams = ResizeService.ResizeParams.fromString(resizeParams)
+    fun getResizedImage(@PathVariable("filename") filename: String, request: HttpServletRequest, @RequestParam @Valid resizeParams: ResizeParams): ResponseEntity<ByteArray> {
         try {
-            val file = fileStorageService.get(filename, parsedResizeParams)
+            val file = fileStorageService.get(filename, resizeParams)
             return ResponseEntity.ok()
                 .header("Content-Type", Files.probeContentType(file.toPath()))
                 .body(file.readBytes())
         } catch (e: FileNotFoundException) {
             try {
-                resizeService.enqueueResizeImage(filename, parsedResizeParams)
+                resizeService.enqueueResizeImage(filename, resizeParams)
                 return ResponseEntity.accepted().build()
             } catch (e: FileNotFoundException) {
                 return ResponseEntity.notFound().build()
@@ -76,7 +75,7 @@ class ImagesController {
     }
 
     @PutMapping("/images/{filename}")
-    fun cropImage(@PathVariable("filename") filename: String, @RequestBody @Validated cropParams: CropParams): ResponseEntity<String> {
+    fun cropImage(@PathVariable("filename") filename: String, @RequestBody @Valid cropParams: CropParams): ResponseEntity<String> {
         try {
             cropService.enqueueCropImage(filename, cropParams)
             return ResponseEntity.accepted().build()
@@ -93,5 +92,33 @@ class ImagesController {
         override fun toString(): String {
             return "x${x}y${y}-w${width}h${height}"
         }
+    }
+
+    data class ResizeParams(
+        @field:Min(0) val width: Int,
+        @field:Min(0) val height: Int,
+        val centerOnFace: Boolean = false) {
+        override fun toString(): String {
+            return "${width}x${height}f${centerOnFace}"
+        }
+
+        companion object {
+            fun fromString(resizeParams: String): ResizeParams {
+                val params = resizeParams.split("x", "f")
+                return ResizeParams(params[0].toInt(), params[1].toInt(), params[2].toBoolean())
+            }
+        }
+    }
+
+    @Component
+    class StringToResizeParamsConverter : Converter<String, ResizeParams> {
+        override fun convert(source: String): ResizeParams {
+            return ResizeParams.fromString(source)
+        }
+    }
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleConstraintViolationException(e: ConstraintViolationException): ResponseEntity<String> {
+        return ResponseEntity(e.message ?: "Invalid parameters", HttpStatus.BAD_REQUEST)
     }
 }

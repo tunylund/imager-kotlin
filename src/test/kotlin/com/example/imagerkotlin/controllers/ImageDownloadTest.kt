@@ -40,7 +40,7 @@ class ImageDownloadTest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun `GET should return the resized image when it already exists`() {
-        val params = ResizeService.ResizeParams(50, 50, false)
+        val params = ImagesController.ResizeParams(50, 50, false)
         every { fileStorageService.get("some-image.png", params) } returns ClassPathResource("fox.png").file
 
         restTemplate.getForEntity("/images/some-image.png?resizeParams={resizeParams}", ByteArray::class.java, params)
@@ -54,7 +54,7 @@ class ImageDownloadTest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun `GET should return accepted and enqueue resize operation if the resized image does not exist`() {
-        val params = ResizeService.ResizeParams(50, 50, false)
+        val params = ImagesController.ResizeParams(50, 50, false)
         every { fileStorageService.get("some-image.png", params) } throws FileNotFoundException()
         every { resizeService.enqueueResizeImage("some-image.png", params) } returns Unit
 
@@ -65,7 +65,7 @@ class ImageDownloadTest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun `GET should return 404 if the original image does not exist for resizing`() {
-        val params = ResizeService.ResizeParams(50, 50, false)
+        val params = ImagesController.ResizeParams(50, 50, false)
         every { fileStorageService.get("some-image.png", params) } throws FileNotFoundException()
         every { resizeService.enqueueResizeImage("some-image.png", params) } throws FileNotFoundException()
 
@@ -81,5 +81,14 @@ class ImageDownloadTest(@Autowired val restTemplate: TestRestTemplate) {
         val response = restTemplate.getForEntity("/images/does-not-exist.png", ByteArray::class.java)
 
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
+    }
+
+    @Test
+    fun `Get should return 400 when requesting a resized image with bad parameters`() {
+        val params = ImagesController.ResizeParams(-50, -50, false)
+
+        val response = restTemplate.getForEntity("/images/some-image.png?resizeParams={resizeParams}", String::class.java, params)
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.imagerkotlin.services
 
+import com.example.imagerkotlin.controllers.ImagesController
 import org.opencv.core.Mat
 import org.opencv.core.MatOfByte
 import org.opencv.core.MatOfRect
@@ -26,23 +27,9 @@ class ResizeService {
     private val faceCascade: CascadeClassifier by lazy {
         val resource = resourceLoader.getResource("classpath:haarcascade_frontalface_default.xml")
         CascadeClassifier(resource.file.absolutePath)
-//        CascadeClassifier(ClassPathResource("haarcascade_frontalface_default.xml").file.absolutePath)
     }
 
-    data class ResizeParams(val width: Int, val height: Int, val centerOnFace: Boolean = false) {
-        override fun toString(): String {
-            return "${width}x${height}f${centerOnFace}"
-        }
-
-        companion object {
-            fun fromString(resizeParams: String): ResizeParams {
-                val params = resizeParams.split("x", "f")
-                return ResizeParams(params[0].toInt(), params[1].toInt(), params[2].toBoolean())
-            }
-        }
-    }
-
-    fun resizeImage(fileName: String, resizeParams: ResizeParams) {
+    fun resizeImage(fileName: String, resizeParams: ImagesController.ResizeParams) {
         val file = fileStorageService.get(fileName)
         val srcImage = Imgcodecs.imread(file.absolutePath)
         if (srcImage.empty()) throw FileNotFoundException(file.toString())
@@ -70,7 +57,7 @@ class ResizeService {
     }
 
     @Async
-    fun enqueueResizeImage(fileName: String, resizeParams: ResizeParams) {
+    fun enqueueResizeImage(fileName: String, resizeParams: ImagesController.ResizeParams) {
         fileStorageService.get(fileName)
         resizeImage(fileName, resizeParams)
     }

@@ -1,5 +1,6 @@
 package com.example.imagerkotlin.services
 
+import com.example.imagerkotlin.controllers.ImagesController
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -28,7 +29,7 @@ class FileStorageService {
         return file
     }
 
-    fun get(filename: String, parsedResizeParams: ResizeService.ResizeParams): File {
+    fun get(filename: String, parsedResizeParams: ImagesController.ResizeParams): File {
         val file = File(filename)
         val fileWithSuffix = Path.of(uploadDir).resolve("${file.nameWithoutExtension}-${parsedResizeParams}.${file.extension}").toFile()
         if (!fileWithSuffix.exists()) {

@@ -1,5 +1,6 @@
 package com.example.imagerkotlin.services
 
+import com.example.imagerkotlin.controllers.ImagesController
 import com.example.imagerkotlin.prepareTestFile
 import com.sksamuel.scrimage.ImmutableImage
 import nu.pattern.OpenCV
@@ -36,14 +37,14 @@ class ResizeServiceTest {
     @Test
     fun `should raise an exception if the file is not found`() {
         assertThrows(FileNotFoundException::class.java) {
-            resizeService.resizeImage("not-found.png", ResizeService.ResizeParams(50, 50))
+            resizeService.resizeImage("not-found.png", ImagesController.ResizeParams(50, 50))
         }
     }
 
     @Test
     fun `enqueueResize should raise an exception if the file is not found`() {
         assertThrows(FileNotFoundException::class.java) {
-            resizeService.enqueueResizeImage("not-found.png", ResizeService.ResizeParams(50, 50))
+            resizeService.enqueueResizeImage("not-found.png", ImagesController.ResizeParams(50, 50))
         }
     }
 
@@ -51,7 +52,7 @@ class ResizeServiceTest {
     fun `should resize the given image file and create a new image`() {
         prepareTestFile("fox.png", uploadDir)
 
-        val resizeParams = ResizeService.ResizeParams(50, 50)
+        val resizeParams = ImagesController.ResizeParams(50, 50)
         resizeService.resizeImage("fox.png", resizeParams)
 
         ImmutableImage.loader().fromFile("${uploadDir}fox-${resizeParams}.png").apply {
@@ -63,7 +64,7 @@ class ResizeServiceTest {
     fun `should resize the given image file and center on face`() {
         prepareTestFile("face1-orig.jpg", uploadDir)
 
-        val resizeParams = ResizeService.ResizeParams(50, 50, true)
+        val resizeParams = ImagesController.ResizeParams(50, 50, true)
         resizeService.resizeImage("face1-orig.jpg", resizeParams)
 
         val expectedResultImage = ImmutableImage.loader().fromFile(ClassPathResource("face1-result.jpg").file.path)
@@ -75,7 +76,7 @@ class ResizeServiceTest {
     fun `should resize the given image file even if it has no faces`() {
         prepareTestFile("fox.png", uploadDir)
 
-        val resizeParams = ResizeService.ResizeParams(50, 50, true)
+        val resizeParams = ImagesController.ResizeParams(50, 50, true)
         resizeService.resizeImage("fox.png", resizeParams)
 
         ImmutableImage.loader().fromFile("${uploadDir}fox-${resizeParams}.png").apply {
